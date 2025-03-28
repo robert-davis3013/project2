@@ -5,6 +5,9 @@
 extern struct NODE* root;
 extern struct NODE* cwd;
 
+struct NODE* findChild(struct NODE* parent, char* name);
+struct NODE* splitPath(char* pathName, char* baseName, char* dirName);
+
 //make directory
 void mkdir(char pathName[]) {
     
@@ -18,13 +21,13 @@ void mkdir(char pathName[]) {
     }
 
     //allocate space for the new directory node
-    NODE* targetDir = (NODE*)malloc(sizeof(NODE));
+    struct NODE* targetDir = (struct NODE*)malloc(sizeof(struct NODE));
 
     //find the target directory to create the new directory in
     //cwd is the parent of targetDir
     //set targetDir's name to the base name of pathName
     char dirName[128]="";
-    NODE* parent = splitPath(pathName, targetDir->name, dirName);
+    struct NODE* parent = splitPath(pathName, targetDir->name, dirName);
     if(!parent) {
         //error in splitPath, directory doesn't exist
         return;
@@ -32,7 +35,7 @@ void mkdir(char pathName[]) {
 
     //search tree to see if targetDir exists already
     //MKDIR ERROR: directory <DIRECTORY> already exists
-    NODE* duplicate = parent->childPtr;
+    struct NODE* duplicate = parent->childPtr;
     while(duplicate) {
         if(strcmp(duplicate->name, targetDir->name) == 0) {
             printf("MKDIR ERROR: directory %s already exists\n", pathCopy);
@@ -47,7 +50,7 @@ void mkdir(char pathName[]) {
     targetDir->childPtr = NULL; // initialize child pointer to NULL
     targetDir->siblingPtr = NULL; // initialize sibling pointer to NULL
     
-    NODE* lastSibling = parent->childPtr;
+    struct NODE* lastSibling = parent->childPtr;
     if(lastSibling == NULL) {
         parent->childPtr = targetDir; //set as first child if no children exist
     } else {
@@ -82,7 +85,7 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
     strcpy(pathCopy, pathName);
 
     //set parentDirectory to root for absolute paths, cwd for relative paths
-    NODE* parentDirectory = isAbsolute ? root : cwd;
+    struct NODE* parentDirectory = isAbsolute ? root : cwd;
     char* token = strtok(pathCopy, "/");
     dirName[0] = '\0';
 
@@ -140,7 +143,7 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
  * @param dirName 
  */
 struct NODE* searchTree(struct NODE* start, char* dirName) {
-    NODE* currentPtr = start;
+    struct NODE* currentPtr = start;
     if(strcmp(dirName, currentPtr->name) == 0) {
         return currentPtr;
     }
@@ -163,14 +166,14 @@ struct NODE* searchTree(struct NODE* start, char* dirName) {
     return NULL;
 }
 
-NODE* findChild(NODE* parent, char* name) {
+struct NODE* findChild(struct NODE* parent, char* name) {
     //If parent is null or has no children, return NULL right away
     if (!parent || !parent->childPtr) {
         return NULL;
     }
 
     //Start from the first child of parent and iterate through the siblings
-    NODE* current=parent->childPtr;
+    struct NODE* current=parent->childPtr;
     while(current) {
         if (strcmp(current->name, name) == 0) {
             return current;

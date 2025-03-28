@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -Wall -std=c11
 DEPS = types.h
-OBJ = otherCommands.o mkdirSplitPath.o 
+OBJ = otherCommands.o mkdirSplitpath.o 
 
 .DEFAULT_GOAL := main
 
@@ -14,4 +14,4 @@ main: main.c $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f mkdirSplitPath.o main
+	rm -f mkdirSplitpath.o main
